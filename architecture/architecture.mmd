@@ -1,0 +1,33 @@
+flowchart TB
+    subgraph Client["Client (Browser) — Persian RTL · React 19 · Tailwind v4"]
+        UI[Pages: Home, Products, Product Detail, Cart, Checkout, Orders, Profile, Blog]
+        CTX[CartContext + LoginContext + useAuth]
+    end
+
+    subgraph Server["Next.js 15 — Node.js 22 (cPanel)"]
+        MID[Middleware: security headers · rate limiting · CORS · bot blocking]
+        PAGES[Pages: SSR/SSG + SEO components + JSON-LD]
+        API[API Routes: auth OTP · cart · orders · receipt upload · products · reviews · search]
+        LIB[lib: prisma.js · security.js · smsNotification.js · formatters · blog-service]
+        FS[Filesystem: public/uploads/receipts + product images]
+    end
+
+    subgraph Data["Data Layer"]
+        DB[(MySQL via Prisma — User · OTP · Product · Category · Order · GuestOrder · CartItem · Review · Discount · ContactMessage · SearchLog)]
+    end
+
+    subgraph External["External Services"]
+        SMS[SMS Provider — OTP codes & order notifications]
+        GOOGLE[Google — Search Console · sitemap · analytics]
+    end
+
+    UI -->|HTTPS| MID
+    MID --> PAGES
+    MID --> API
+    PAGES --> LIB
+    API --> LIB
+    LIB -->|Prisma queries| DB
+    API -->|formidable + file-type| FS
+    LIB -->|codes & messages| SMS
+    PAGES -->|sitemap.xml · robots.txt| GOOGLE
+    API -->|search logging| DB
